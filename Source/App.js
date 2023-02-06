@@ -10,8 +10,13 @@ const { random, floor } = Math;
 const randomInt = (minimum, maximum) =>
     floor(random() * (maximum - minimum + 1) + minimum);
 
-const sleep = (millis) =>
-    new Promise((resolve) => setTimeout(resolve, millis));
+const sleep = (ms) =>
+    new Promise((resolve, reject) => setTimeout(() => {
+        if (cancel) {
+            return reject();
+        } 
+        return resolve();
+    }, ms));
 
 
 let
@@ -81,6 +86,8 @@ function onSpeedChange(event) {
 function animateSorting() {
 
     const steps = progressAnimation();
+    button_sort.innerText = 'Sorting';
+    button_sort.classList.add('sorting');
 
     const animate = () =>
         button_sort.innerText = steps.next().value;
@@ -157,13 +164,16 @@ async function visualize(index, color) {
 
 function disableNavigation(state) {
     activeSelection.disabled = state;
-    button_sort.disabled = state;
     slider_size.disabled = state;
 }
 
 
 function onStartSorting() {
-    sortingProcess = sort();
+    if (!sorting_progress) {
+        sortingProcess = sort();
+    } else {
+        cancelSorting();
+    }
 }
 
 async function sort() {
@@ -174,13 +184,16 @@ async function sort() {
     disableNavigation(true);
     animateSorting();
 
-    const parameters = [size, values, 0, size - 1]
+    const parameters = [size, values, 0, size - 1];
 
     const process = Algorithms[algorithm](...parameters);
 
     for (const [color, index] of process) {
 
-        await visualize(index, color);
+        try {
+            await visualize(index, color);
+        }
+        catch {}
 
         if (cancel)
             break;
@@ -191,10 +204,20 @@ async function sort() {
     clearInterval(animation);
 
     button_sort.innerText = 'Sort';
+    button_sort.classList.remove('sorting');
 
     sorting_progress = 0;
     time = 0;
 }
+
+function cancelSorting() {
+    
+    cancel = true;
+
+    for (const bar of list_bars.children) {
+        bar.style.backgroundColor = null;
+    }
+};
 
 
 

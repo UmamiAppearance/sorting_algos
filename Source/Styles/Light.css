@@ -7,6 +7,10 @@
 }
 
 body {
-    background-color: #f5f5f5;
+    background-color: #eee;
     color: black;
+}
+
+button.sorting {
+    background-image: var(--stop-dark-symbol);
 }
