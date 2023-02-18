@@ -5,6 +5,9 @@
 
 # Sorting Algorithms
 
+[![streamlabs](https://img.shields.io/badge/Donate-%241-red)](https://streamlabs.com/davidkobalia/tip)
+
+
 *Visualization of a variety of sorting algorithms.*
 
 <br>
